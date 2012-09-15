@@ -68,11 +68,12 @@ class Places
 
   def as_json(options = {})
     {
-      :line_1 => "#{street_number} #{street_name}",
-      :line_2 => neighborhood,
-      :city   => city,
-      :state  => state,
-      :zip    => zip
+      :address => address,
+      :line_1  => "#{street_number} #{street_name}",
+      :line_2  => neighborhood,
+      :city    => city,
+      :state   => state,
+      :zip     => zip
     }
   end
 end
