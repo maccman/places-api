@@ -79,14 +79,15 @@ end
 
 Places.key = settings.api_key
 
-get '/search' do
+before do
+  headers 'Access-Control-Allow-Origin' => settings.origin
+end
+
+get '/search', :provides => 'application/json' do
   if !params[:query] || params[:query].empty?
     halt 406
   end
 
-  places = Places.search(
-    params[:query],
-    :query => {:types => 'geocode'}
-  )
+  places = Places.search(params[:query], :query => {:types => 'geocode'})
   places.to_json
 end
