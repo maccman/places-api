@@ -11,6 +11,7 @@ require 'active_support/json'
 require 'active_support/core_ext/hash'
 
 config_file 'config.yml'
+set :api_key, ENV['API_KEY']
 
 class Places
   include HTTParty
