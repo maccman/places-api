@@ -11,9 +11,9 @@ require 'active_support/json'
 require 'active_support/core_ext/hash'
 
 config_file 'config.yml'
-set :api_key, ENV['API_KEY']
+set :api_key, ENV['GOOGLE_KEY']
 
-class Places
+class Place
   include HTTParty
 
   base_uri 'https://maps.googleapis.com/maps/api/place'
@@ -89,7 +89,7 @@ class Places
   end
 end
 
-Places.key = settings.api_key
+Place.key = settings.api_key
 
 before do
   headers 'Access-Control-Allow-Origin' => settings.origin
@@ -100,7 +100,7 @@ get '/search', :provides => 'application/json' do
     halt 406
   end
 
-  places = Places.search(
+  places = Place.search(
     params[:query],
     :country => params[:country]
   )
