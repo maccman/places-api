@@ -8,6 +8,7 @@ require 'sinatra'
 require 'sinatra/reloader' if development?
 require 'sinatra/config_file'
 require 'active_support/json'
+require 'active_support/core_ext/hash'
 
 config_file 'config.yml'
 
@@ -22,8 +23,17 @@ class Places
   end
 
   def self.search(query, options = {})
-    query  = {:input => query, :sensor => false}.merge(options[:query] || {})
-    result = get('/autocomplete/json', :query => query)
+    options.reverse_merge!(
+      :input  => query,
+      :sensor => false,
+      :types  => 'geocode'
+    )
+
+    if country = options[:country]
+      options[:components] = "country:#{country}"
+    end
+
+    result = get('/autocomplete/json', :query => options)
 
     places = (result['predictions'] || [])
     places.map {|place| details(place['reference']) }
@@ -89,6 +99,9 @@ get '/search', :provides => 'application/json' do
     halt 406
   end
 
-  places = Places.search(params[:query], :query => {:types => 'geocode'})
+  places = Places.search(
+    params[:query],
+    :country => params[:country]
+  )
   places.to_json
 end
