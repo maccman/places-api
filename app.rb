@@ -21,7 +21,7 @@ class Places
     default_params :key => key
   end
 
-  def self.find(query, options = {})
+  def self.search(query, options = {})
     query  = {:input => query, :sensor => false}.merge(options[:query] || {})
     result = get('/autocomplete/json', :query => query)
 
@@ -79,12 +79,12 @@ end
 
 Places.key = settings.api_key
 
-get '/places/autocomplete' do
+get '/search' do
   if !params[:query] || params[:query].empty?
     halt 406
   end
 
-  places = Places.find(
+  places = Places.search(
     params[:query],
     :query => {:types => 'geocode'}
   )
