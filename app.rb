@@ -24,11 +24,20 @@ class Geolocate
 
     options.reverse_merge!(:ip => ip, :position => true)
     result = get('/get_json.php', :query => options)
-    Hashie::Mash.new(result)
+    result = Hashie::Mash.new(result)
+
+    return Hashie::Mash.new if unknown?(result)
+    result
   end
+
+  protected
 
   def self.local?(ip)
     ['127.0.0.1', '0.0.0.0'].include?(ip)
+  end
+
+  def self.unknown?(result)
+    result.country_code == 'XX'
   end
 end
 
@@ -128,11 +137,10 @@ get '/search', :provides => 'application/json' do
   end
 
   geolocate = Geolocate.ip(request.ip)
-  country   = (params[:country] || geolocate.country_code || 'us').downcase
 
   places = Place.search(
     params[:query],
-    :country  => country,
+    :country  => params[:country],
     :lat      => geolocate.lat,
     :lng      => geolocate.lng
   )
