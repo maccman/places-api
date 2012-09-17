@@ -13,6 +13,25 @@ require 'active_support/core_ext/hash'
 config_file 'config.yml'
 set :api_key, ENV['GOOGLE_KEY']
 
+class Geolocate
+  include HTTParty
+
+  base_uri 'http://api.hostip.info'
+  headers('User-Agent' => 'Places-API, v0.1')
+
+  def self.ip(ip, options = {})
+    return Hashie::Mash.new if local?(ip)
+
+    options.reverse_merge!(:ip => ip, :position => true)
+    result = get('/get_json.php', :query => options)
+    Hashie::Mash.new(result)
+  end
+
+  def self.local?(ip)
+    ['127.0.0.1', '0.0.0.0'].include?(ip)
+  end
+end
+
 class Place
   include HTTParty
 
@@ -32,6 +51,10 @@ class Place
 
     if country = options[:country]
       options[:components] = "country:#{country}"
+    end
+
+    if lat = options[:lat] && lng = options[:lng]
+      options[:location] = [lat, lng].join(',')
     end
 
     result = get('/autocomplete/json', :query => options)
@@ -100,9 +123,14 @@ get '/search', :provides => 'application/json' do
     halt 406
   end
 
+  geolocate = Geolocate.ip(request.ip)
+  country   = (params[:country] || geolocate.country_code || 'us').downcase
+
   places = Place.search(
     params[:query],
-    :country => params[:country]
+    :country  => country,
+    :lat      => geolocate.lat,
+    :lng      => geolocate.lng
   )
   places.to_json
 end
