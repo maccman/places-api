@@ -50,11 +50,15 @@ class Place
     )
 
     if country = options[:country]
-      options[:components] = "country:#{country}"
+      options[:components] ||= "country:#{country}"
+      options.delete(:country)
     end
 
-    if lat = options[:lat] && lng = options[:lng]
-      options[:location] = [lat, lng].join(',')
+    if (lat = options[:lat]) && (lng = options[:lng])
+      options[:location] ||= [lat, lng].join(',')
+      options[:radius]   ||= 10000
+      options.delete(:lat)
+      options.delete(:lng)
     end
 
     result = get('/autocomplete/json', :query => options)
