@@ -98,7 +98,7 @@ class Place
     # Oh, Google's & their APIs
     types = @result.address_components.inject({}) do |hash, comp|
       comp.types.each do |type|
-        hash[type.to_sym] = comp.long_name
+        hash[type.to_sym] = comp.short_name
       end
 
       hash
