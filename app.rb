@@ -120,7 +120,8 @@ class Place
       :line_2  => neighborhood,
       :city    => city,
       :state   => state,
-      :zip     => zip
+      :zip     => zip,
+      :country => country
     }
   end
 end
