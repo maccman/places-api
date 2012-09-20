@@ -98,7 +98,8 @@ class Place
     # Oh, Google's & their APIs
     types = @result.address_components.inject({}) do |hash, comp|
       comp.types.each do |type|
-        hash[type.to_sym] = comp.short_name
+        hash[:"#{type}"]      = comp.short_name
+        hash[:"#{type}_long"] = comp.long_name
       end
 
       hash
@@ -107,7 +108,7 @@ class Place
     @street_number = types[:street_number]
     @street_name   = types[:route]
     @neighborhood  = types[:neighborhood]
-    @city          = types[:locality]
+    @city          = types[:locality_long]
     @state         = types[:administrative_area_level_1]
     @country       = types[:country]
     @zip           = types[:postal_code]
@@ -115,13 +116,14 @@ class Place
 
   def as_json(options = {})
     {
-      :address => address,
-      :line_1  => "#{street_number} #{street_name}",
-      :line_2  => neighborhood,
-      :city    => city,
-      :state   => state,
-      :zip     => zip,
-      :country => country
+      :address      => address,
+      :line_1       => "#{street_number} #{street_name}",
+      :line_2       => nil,
+      :neighborhood => neighborhood,
+      :city         => city,
+      :state        => state,
+      :zip          => zip,
+      :country      => country
     }
   end
 end
