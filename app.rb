@@ -27,6 +27,12 @@ class Geolocate
     result = Hashie::Mash.new(result)
 
     return Hashie::Mash.new if unknown?(result)
+
+    # City is usually: San Francisco, CA
+    if result.country_code == 'US'
+      [result.city, result.state] = result.city.split(',', 2)
+    end
+
     result
   end
 
