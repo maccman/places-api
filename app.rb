@@ -30,7 +30,7 @@ class Geolocate
 
     # City is usually: San Francisco, CA
     if result.country_code == 'US'
-      [result.city, result.state] = result.city.split(',', 2)
+      result.city, result.state = result.city.split(',', 2)
     end
 
     result
