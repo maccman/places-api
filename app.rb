@@ -149,3 +149,7 @@ get '/search', :provides => 'application/json' do
   )
   places.to_json
 end
+
+get '/ip', :provides => 'application/json' do
+  Geolocate.ip(request.ip)
+end
