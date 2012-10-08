@@ -136,6 +136,17 @@ end
 
 Place.key = settings.api_key
 
+helpers do
+  def jsonp(body)
+    if callback = params[:callback]
+      content_type 'text/javascript'
+      "#{callback}(#{body})"
+    else
+      body
+    end
+  end
+end
+
 before do
   headers 'Access-Control-Allow-Origin' => settings.origin
 end
@@ -157,5 +168,5 @@ get '/search', :provides => 'application/json' do
 end
 
 get '/ip', :provides => 'application/json' do
-  Geolocate.ip(request.ip).to_json
+  jsonp Geolocate.ip(request.ip).to_json
 end
