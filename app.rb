@@ -33,6 +33,11 @@ class Geolocate
       result.city, result.state = result.city.split(', ', 2)
     end
 
+    # Sometimes city is '(Unknown City)'
+    result.each do |key, value|
+      result[key] = nil if value =~ /unknown/i
+    end
+
     result
   end
 
@@ -168,5 +173,5 @@ get '/search', :provides => 'application/json' do
 end
 
 get '/ip', :provides => 'application/json' do
-  jsonp Geolocate.ip(request.ip).to_json
+  jsonp Geolocate.ip(params[:query] || request.ip).to_json
 end
